@@ -55,20 +55,18 @@ public class NEMA_Client extends JFrame {
             }
         });
 
-        updateButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    int[][] fireData = updateFire();
-                    String report = "";
-                    for (int i = 0; i < fireData.length; i++) {
-                        report += "Fire " + fireData[i][0] + " - Active: " + fireData[i][1] + ", Intensity: " + fireData[i][2] + "\n";
-                    }
-                    reportArea.setText(report);
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Error updating fire data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
+updateButton.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+        int[][] fireData = updateFire();
+        if (fireData != null) {
+            String report = "";
+            for (int i = 0; i < fireData.length; i++) {
+                report += "Fire " + fireData[i][0] + " - Active: " + fireData[i][1] + ", Intensity: " + fireData[i][2] + "\n";
             }
-        });
+            reportArea.setText(report);
+        }
+    }
+});
 
         // Add GUI components to content pane
         Container contentPane = getContentPane();
@@ -103,33 +101,40 @@ public class NEMA_Client extends JFrame {
         contentPane.add(bottomPanel, BorderLayout.SOUTH);
     }
 
-public int[][] updateFire() throws SQLException {
-    // Create SQL statement to select the fire data from the table
-    String sql = "SELECT id, isActive, intensity FROM fire";
-    // Execute the SQL statement
-    Statement stmt = connection.createStatement();
-    ResultSet rs = stmt.executeQuery(sql);
+public int[][] updateFire() {
+    try {
+        // Create SQL statement to select the fire data from the table
+        String sql = "SELECT id, isActive, intensity FROM fire";
 
-    // Create arrays to store the fire data
-    int[] id = new int[3];
-    int[] isActive = new int[3];
-    int[] intensity = new int[3];
+        // Execute the SQL statement
+        Statement stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
 
-    // Iterate through the result set and store the data in the arrays
-    int i = 0;
-    while (rs.next()) {
-        id[i] = rs.getInt("id");
-        isActive[i] = rs.getInt("isActive");
-        intensity[i] = rs.getInt("intensity");
-        i++;
+        // Create a two-dimensional array to store the fire data
+        int[][] fireData = new int[3][3];
+        int i = 0;
+
+        // Iterate through the result set and add each line of the report
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            int isActive = rs.getInt("isActive");
+            int intensity = rs.getInt("intensity");
+            fireData[i][0] = id;
+            fireData[i][1] = isActive;
+            fireData[i][2] = intensity;
+            i++;
+        }
+
+        // Close the statement and result set
+        rs.close();
+        stmt.close();
+
+        // Return the fire data array
+        return fireData;
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(null, "Error updating fire data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        return null;
     }
-
-    // Close the statement and result set
-    rs.close();
-    stmt.close();
-
-    // Return the fire data as a 2D array
-    return new int[][]{id, isActive, intensity};
 }
 
     public static void main(String[] args) {
