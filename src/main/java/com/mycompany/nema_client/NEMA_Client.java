@@ -76,9 +76,17 @@ updateButton.addActionListener(new ActionListener() {
                 report += "Fire " + fireData[i][0] + " - Active: " + fireData[i][1] + ", Intensity: " + fireData[i][2] + "\n";
             }
             reportArea.setText(report);
+            
+            // Populate the fireList combo box with the fire data
+            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+            for (int i = 0; i < fireData.length; i++) {
+                model.addElement("Fire " + fireData[i][0]);
+            }
+            fireList.setModel(model);
         }
     }
 });
+
 
         // Add GUI components to content pane
         Container contentPane = getContentPane();
@@ -148,6 +156,7 @@ public int[][] updateFire() {
         return null;
     }
 }
+
 
     public static void main(String[] args) {
         NEMA_Client client = new NEMA_Client();
