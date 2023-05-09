@@ -17,6 +17,8 @@ import java.sql.*;
  * @author Nighthawk
  */
 public class NEMA_Client extends JFrame {
+    
+    
 
     // Declare GUI components
     private JLabel severityLabel, fireLabel;
@@ -32,6 +34,16 @@ public class NEMA_Client extends JFrame {
     private Connection connection;
 
     public NEMA_Client() {
+        
+   try{
+        // Hardcoding the Credentials for the Database
+     String USERNAME = "root";
+     String PASSWORD = "Nintiko3!@";
+     String DB_URL = "jdbc:mysql://127.0.0.1:3306/ibdms_server" ;
+     connection = DriverManager.getConnection(DB_URL, USERNAME,PASSWORD);
+   } catch (SQLException ex) {
+       JOptionPane.showMessageDialog(null, "Error connecting to database: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+   }
 
         // Set GUI window properties
         setTitle("NEMA Client");
